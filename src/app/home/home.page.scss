@@ -1,0 +1,453 @@
+// Estilos para la barra de búsqueda
+.search-container {
+  padding: 16px;
+  background-color: var(--ion-color-light-tint);
+  border-bottom: 1px solid var(--ion-color-light);
+  
+  ion-segment {
+    margin-bottom: 12px;
+    
+    ion-segment-button {
+      --indicator-color: var(--ion-color-primary);
+      --color: var(--ion-color-medium);
+      --color-checked: var(--ion-color-primary);
+      font-size: 12px;
+      min-height: 32px;
+    }
+  }
+  
+  ion-searchbar {
+    --background: var(--ion-color-light);
+    --border-radius: 8px;
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --icon-color: var(--ion-color-medium);
+    --placeholder-color: var(--ion-color-medium);
+    --color: var(--ion-color-dark);
+    
+    &.searchbar-has-value {
+      --background: white;
+      --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+// Estilos para la tabla responsive
+table {
+  border-collapse: collapse;
+  width: 100%;
+  
+  th, td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--ion-color-light);
+    vertical-align: middle;
+  }
+  
+  th {
+    background-color: var(--ion-color-light);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  tr:nth-child(even) {
+    background-color: var(--ion-color-light-tint);
+  }
+  
+  tr:hover {
+    background-color: var(--ion-color-light-shade);
+    transition: background-color 0.2s ease;
+  }
+}
+
+// Contenedor de tabla responsive
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--ion-color-light);
+}
+
+// Botones de acción en la tabla
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    min-width: 40px;
+    height: 36px;
+    
+    &:hover {
+      transform: scale(1.05);
+      transition: transform 0.2s ease;
+    }
+  }
+}
+
+// Estilos para el botón flotante
+ion-fab {
+  z-index: 1000;
+  
+  ion-fab-button {
+    --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --transition: all 0.3s ease;
+    
+    &:hover {
+      --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    &:active {
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Estilos para mensajes de error
+.error-card {
+  ion-card-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    
+    ion-icon {
+      font-size: 24px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    
+    .error-content {
+      flex: 1;
+      
+      ul {
+        margin: 8px 0 0 0;
+        padding-left: 16px;
+        
+        li {
+          margin: 4px 0;
+          line-height: 1.4;
+        }
+      }
+    }
+  }
+}
+
+// Mejoras para formularios
+ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  
+  ion-label {
+    margin-bottom: 8px;
+    
+    &[slot="helper"] {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+  }
+  
+  ion-input[type="date"] {
+    --color: var(--ion-color-dark);
+    
+    &:invalid {
+      --color: var(--ion-color-danger);
+      border: 1px solid var(--ion-color-danger);
+      border-radius: 4px;
+    }
+  }
+}
+
+// Estilos para modales
+ion-modal {
+  ion-content {
+    --padding-top: 0;
+    --padding-bottom: 0;
+  }
+  
+  ion-toolbar {
+    ion-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+}
+
+// Estilos para cards de resultados
+ion-card {
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  
+  &:hover {
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  ion-card-header {
+    ion-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    ion-card-subtitle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      
+      ion-button {
+        --padding-start: 8px;
+        --padding-end: 8px;
+        height: 24px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// Responsive design para móviles
+@media (max-width: 768px) {
+  .search-container {
+    padding: 12px;
+    
+    ion-segment {
+      ion-segment-button {
+        font-size: 11px;
+        ion-label {
+          padding: 4px 8px;
+        }
+      }
+    }
+  }
+  
+  table {
+    font-size: 14px;
+    
+    th, td {
+      padding: 8px 4px;
+      
+      &:nth-child(n+5) {
+        display: none; // Oculta columnas menos importantes en móvil
+      }
+    }
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+    
+    ion-button {
+      width: 100%;
+      height: 32px;
+      font-size: 12px;
+    }
+  }
+  
+  // Mostrar tabla completa en modo landscape
+  @media (orientation: landscape) {
+    table th, table td {
+      &:nth-child(n+5) {
+        display: table-cell;
+      }
+    }
+  }
+}
+
+// Estilos para estados de carga
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  flex-direction: column;
+  gap: 16px;
+  
+  ion-spinner {
+    transform: scale(1.5);
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+// Estilos para estados vacíos
+.empty-state {
+  text-align: center;
+  padding: 32px;
+  
+  ion-icon {
+    font-size: 64px;
+    color: var(--ion-color-medium);
+    margin-bottom: 16px;
+  }
+  
+  h2 {
+    color: var(--ion-color-dark);
+    margin-bottom: 8px;
+    font-size: 20px;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    margin: 0 0 16px 0;
+    line-height: 1.5;
+  }
+  
+  ion-button {
+    margin-top: 12px;
+  }
+}
+
+// Animaciones
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// Mejoras para accesibilidad
+ion-button:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+ion-searchbar:focus-within {
+  --box-shadow: 0 0 0 2px var(--ion-color-primary-tint);
+}
+
+// Estilos para toast personalizado
+ion-toast {
+  --button-color: white;
+  
+  &.toast-success {
+    --background: var(--ion-color-success);
+    --color: white;
+  }
+  
+  &.toast-error {
+    --background: var(--ion-color-danger);
+    --color: white;
+  }
+}
+
+// Mejoras para el formulario
+.form-container {
+  padding: 16px;
+  
+  .form-section {
+    margin-bottom: 24px;
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--ion-color-primary);
+    }
+  }
+  
+  .form-buttons {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    
+    ion-button {
+      flex: 1;
+      min-width: 120px;
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .search-container {
+    background-color: var(--ion-color-dark-tint);
+    border-bottom-color: var(--ion-color-dark);
+    
+    ion-searchbar {
+      --background: var(--ion-color-dark);
+      --color: var(--ion-color-light);
+      --placeholder-color: var(--ion-color-medium);
+      --icon-color: var(--ion-color-medium);
+      
+      &.searchbar-has-value {
+        --background: var(--ion-color-dark-shade);
+      }
+    }
+  }
+  
+  table {
+    th {
+      background-color: var(--ion-color-dark);
+      color: var(--ion-color-light);
+    }
+    
+    tr:nth-child(even) {
+      background-color: var(--ion-color-dark-tint);
+    }
+    
+    tr:hover {
+      background-color: var(--ion-color-dark-shade);
+    }
+  }
+  
+  ion-card {
+    --background: var(--ion-color-dark-tint);
+    --color: var(--ion-color-light);
+  }
+}
+
+// Animaciones adicionales para UX mejorada
+.search-results-enter {
+  animation: resultsEnter 0.4s ease-out;
+}
+
+@keyframes resultsEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Highlight para términos de búsqueda (si se implementa más adelante)
+.search-highlight {
+  background-color: var(--ion-color-warning-tint);
+  color: var(--ion-color-warning-contrast);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+}

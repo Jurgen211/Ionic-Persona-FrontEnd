@@ -1,0 +1,362 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Gestión de Personas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="mostrarTodas()" [disabled]="isLoading">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Barra de búsqueda con selector de tipo -->
+  <div style="padding: 16px; background-color: var(--ion-color-light-tint);">
+    <!-- Selector de tipo de búsqueda -->
+    <ion-segment [(ngModel)]="searchType" (ionChange)="onSearchTypeChange($event)" style="margin-bottom: 12px;">
+      <ion-segment-button value="general">
+        <ion-label>Buscar por Nombre/Email</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="id">
+        <ion-label>Buscar por ID</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Barra de búsqueda -->
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      (ionInput)="onSearchChange($event)"
+      (ionClear)="clearSearch()"
+      [placeholder]="searchType === 'id' ? 'Ingrese el ID de la persona...' : 'Buscar por nombre, apellido o email...'"
+      [type]="searchType === 'id' ? 'number' : 'text'"
+      show-clear-button="focus"
+      debounce="300">
+    </ion-searchbar>
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center; height: 200px;">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+  </div>
+
+  <!-- Lista de personas en formato tabla -->
+  <div *ngIf="showList && !isLoading">
+    <ion-card *ngIf="personas.length === 0 && !searchTerm" style="margin: 16px;">
+      <ion-card-content style="text-align: center; padding: 32px;">
+        <ion-icon name="people-outline" size="large" color="medium"></ion-icon>
+        <h2>No hay personas registradas</h2>
+        <p>Presiona el botón + para agregar una nueva persona</p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="personas.length === 0 && searchTerm" style="margin: 16px;">
+      <ion-card-content style="text-align: center; padding: 32px;">
+        <ion-icon name="search-outline" size="large" color="medium"></ion-icon>
+        <h2>No se encontraron resultados</h2>
+        <p>No hay personas que coincidan con: "{{ searchTerm }}"</p>
+        <ion-button fill="outline" (click)="clearSearch()">
+          Mostrar todas las personas
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="personas.length > 0" style="margin: 16px;">
+      <ion-card-header>
+        <ion-card-title>
+          {{ searchTerm ? 'Resultados de búsqueda' : 'Lista de Personas' }} 
+          ({{ personas.length }})
+        </ion-card-title>
+        <ion-card-subtitle *ngIf="searchTerm">
+          Búsqueda: "{{ searchTerm }}"
+          <ion-button fill="clear" size="small" (click)="clearSearch()">
+            Limpiar búsqueda
+          </ion-button>
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content style="padding: 0;">
+        <!-- Tabla responsive -->
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background-color: var(--ion-color-light); border-bottom: 2px solid var(--ion-color-medium);">
+                <th style="padding: 12px 8px; text-align: left; font-weight: 600; min-width: 60px;">ID</th>
+                <th style="padding: 12px 8px; text-align: left; font-weight: 600; min-width: 120px;">Nombre</th>
+                <th style="padding: 12px 8px; text-align: left; font-weight: 600; min-width: 120px;">Apellido</th>
+                <th style="padding: 12px 8px; text-align: left; font-weight: 600; min-width: 180px;">Email</th>
+                <th style="padding: 12px 8px; text-align: left; font-weight: 600; min-width: 120px;">Teléfono</th>
+                <th style="padding: 12px 8px; text-align: left; font-weight: 600; min-width: 100px;">F. Nacimiento</th>
+                <th style="padding: 12px 8px; text-align: center; font-weight: 600; min-width: 120px;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let persona of personas; let i = index" 
+                  [style.background-color]="i % 2 === 0 ? 'transparent' : 'var(--ion-color-light-tint)'">
+                <td style="padding: 12px 8px; border-bottom: 1px solid var(--ion-color-light);">
+                  <strong>{{ persona.id }}</strong>
+                </td>
+                <td style="padding: 12px 8px; border-bottom: 1px solid var(--ion-color-light);">
+                  {{ persona.nombre }}
+                </td>
+                <td style="padding: 12px 8px; border-bottom: 1px solid var(--ion-color-light);">
+                  {{ persona.apellido }}
+                </td>
+                <td style="padding: 12px 8px; border-bottom: 1px solid var(--ion-color-light);">
+                  {{ persona.email }}
+                </td>
+                <td style="padding: 12px 8px; border-bottom: 1px solid var(--ion-color-light);">
+                  {{ persona.telefono || 'N/A' }}
+                </td>
+                <td style="padding: 12px 8px; border-bottom: 1px solid var(--ion-color-light);">
+                  {{ persona.fechaNacimiento ? (persona.fechaNacimiento | date:'dd/MM/yyyy') : 'N/A' }}
+                </td>
+                <td style="padding: 12px 8px; border-bottom: 1px solid var(--ion-color-light); text-align: center;">
+                  <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                    <ion-button size="small" fill="clear" color="primary" (click)="verDetalles(persona)">
+                      <ion-icon name="eye-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                    <ion-button size="small" fill="clear" color="warning" (click)="editarPersona(persona)">
+                      <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                    <ion-button size="small" fill="clear" color="danger" (click)="eliminarPersona(persona.id)">
+                      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Detalles de persona -->
+  <div *ngIf="showDetails && !isLoading">
+    <ion-card style="margin: 16px;">
+      <ion-card-header>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <ion-card-title>Detalles de Persona</ion-card-title>
+          <ion-button fill="clear" (click)="volver()">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-md="6">
+              <ion-item lines="none">
+                <ion-label>
+                  <h3>ID</h3>
+                  <p>{{ selectedPersona?.id }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" size-md="6">
+              <ion-item lines="none">
+                <ion-label>
+                  <h3>Nombre Completo</h3>
+                  <p>{{ selectedPersona?.nombre }} {{ selectedPersona?.apellido }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="12" size-md="6">
+              <ion-item lines="none">
+                <ion-label>
+                  <h3>Email</h3>
+                  <p>{{ selectedPersona?.email }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" size-md="6">
+              <ion-item lines="none">
+                <ion-label>
+                  <h3>Teléfono</h3>
+                  <p>{{ selectedPersona?.telefono || 'No especificado' }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="12" size-md="6">
+              <ion-item lines="none">
+                <ion-label>
+                  <h3>Fecha de Nacimiento</h3>
+                  <p>{{ selectedPersona?.fechaNacimiento ? (selectedPersona.fechaNacimiento | date:'dd/MM/yyyy') : 'No especificada' }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" size-md="6">
+              <ion-item lines="none">
+                <ion-label>
+                  <h3>Dirección</h3>
+                  <p>{{ selectedPersona?.direccion || 'No especificada' }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        
+        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+          <ion-button expand="block" color="primary" (click)="editarPersona(selectedPersona)">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Editar
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="volver()">
+            Volver a la lista
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Botón para agregar persona -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="margin: 16px;">
+    <ion-fab-button color="primary" (click)="agregarPersona()" [disabled]="isLoading">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+
+<!-- Modal para agregar/editar persona -->
+<ion-modal [isOpen]="isFormModalOpen" (didDismiss)="cerrarModalFormulario()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ isEditing ? 'Editar Persona' : 'Agregar Persona' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" (click)="cerrarModalFormulario()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div style="padding: 16px;">
+        <!-- Mensajes de error mejorados -->
+        <ion-card *ngIf="errorMessage" color="danger" style="margin-bottom: 16px;">
+          <ion-card-content>
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+              <ion-icon name="alert-circle-outline" style="font-size: 24px; margin-top: 2px; flex-shrink: 0;"></ion-icon>
+              <div style="flex: 1;">
+                <div *ngIf="errorMessages.length === 1">
+                  <strong>Error:</strong>
+                  <p style="margin: 4px 0 0 0;">{{ errorMessages[0] }}</p>
+                </div>
+                <div *ngIf="errorMessages.length > 1">
+                  <strong>Se encontraron los siguientes errores:</strong>
+                  <ul style="margin: 8px 0 0 0; padding-left: 16px;">
+                    <li *ngFor="let error of errorMessages" style="margin: 4px 0;">{{ error }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <form (ngSubmit)="guardarPersona()">
+          <ion-item>
+            <ion-label position="stacked">Nombre *</ion-label>
+            <ion-input 
+              [(ngModel)]="formData.nombre" 
+              name="nombre" 
+              placeholder="Ingrese el nombre"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Apellido *</ion-label>
+            <ion-input 
+              [(ngModel)]="formData.apellido" 
+              name="apellido" 
+              placeholder="Ingrese el apellido"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Email *</ion-label>
+            <ion-input 
+              [(ngModel)]="formData.email" 
+              name="email" 
+              type="email"
+              placeholder="Ingrese el email"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Fecha de Nacimiento *</ion-label>
+            <ion-input 
+              [(ngModel)]="formData.fechaNacimiento" 
+              name="fechaNacimiento" 
+              type="date"
+              [max]="maxDate"
+              required>
+            </ion-input>
+            <ion-label slot="helper" color="medium">
+              No puede ser superior a {{ maxDate | date:'dd/MM/yyyy' }}
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Teléfono</ion-label>
+            <ion-input 
+              [(ngModel)]="formData.telefono" 
+              name="telefono" 
+              type="tel"
+              placeholder="Ingrese el teléfono">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Dirección</ion-label>
+            <ion-textarea 
+              [(ngModel)]="formData.direccion" 
+              name="direccion" 
+              placeholder="Ingrese la dirección"
+              rows="3">
+            </ion-textarea>
+          </ion-item>
+
+          <div style="margin-top: 24px; display: flex; gap: 12px;">
+            <ion-button 
+              type="submit" 
+              expand="block" 
+              [disabled]="isLoading"
+              color="primary">
+              <ion-spinner *ngIf="isLoading" name="crescent" style="margin-right: 8px;"></ion-spinner>
+              <ion-icon *ngIf="!isLoading" name="save-outline" slot="start"></ion-icon>
+              {{ isLoading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Guardar') }}
+            </ion-button>
+            <ion-button 
+              type="button" 
+              expand="block" 
+              fill="outline" 
+              (click)="cerrarModalFormulario()"
+              [disabled]="isLoading">
+              Cancelar
+            </ion-button>
+          </div>
+        </form>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Toast para mensajes -->
+<ion-toast
+  [isOpen]="isToastOpen"
+  [message]="toastMessage"
+  [duration]="3000"
+  [color]="toastColor"
+  position="bottom"
+  [buttons]="[{
+    text: 'Cerrar',
+    role: 'cancel'
+  }]"
+  (didDismiss)="isToastOpen = false">
+</ion-toast>
